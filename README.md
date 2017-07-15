@@ -7,7 +7,7 @@ held [Dr. Alex Fraser](http://cis.lmu.de/~fraser/).
 
 # Dataset
 
-The [*SETimes corpus](http://nlp.ffzg.hr/resources/corpora/setimes/) contains
+The [*SETimes corpus*](http://nlp.ffzg.hr/resources/corpora/setimes/) contains
 of 207,777 parallel sentences for the Macedonian and English language pair.
 
 For all experiments the corpus was split into training, development and

@@ -17,5 +17,5 @@ test set:
 | ----------- | --------- | -----------------------------------------------------------------------------------------------------------------------------------------
 | Training    | 205,777   | via [GitHub](https://github.com/stefan-it/nmt-mk-en/raw/master/data/setimes.mk-en.train.tgz) or located in `data/setimes.mk-en.train.tgz`
 | Development |   1,000   | via [GitHub](https://github.com/stefan-it/nmt-mk-en/raw/master/data/setimes.mk-en.dev.tgz) or located in `data/setimes.mk-en.dev.tgz`
-| Test        |   1,000   | currently n.a.
+| Test        |   1,000   | via [GitHub](https://github.com/stefan-it/nmt-mk-en/raw/master/data/setimes.mk-en.test.tgz) or located in `data/setimes.mk-en.test.tgz`
 

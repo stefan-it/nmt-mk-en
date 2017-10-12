@@ -3,7 +3,7 @@
 This repository contains all data and documentation for building a neural
 machine translation system for Macedonian to English. This work was done during
 the the M.Sc. course (summer term) [Machine Translation](http://cis.lmu.de/~fraser/mt_2017/)
-held by [Dr. Alex Fraser](http://cis.lmu.de/~fraser/).
+held by [Prof. Dr. Alex Fraser](http://cis.lmu.de/~fraser/).
 
 # Dataset
 
@@ -70,7 +70,9 @@ mkdir model-data
 After that the `fairseq` tool can be invoked to preprocess the corpus:
 
 ```bash
-fairseq preprocess -sourcelang mk -targetlang en -trainpref train/train -validpref dev/dev -testpref test/test -thresholdsrc 3 -thresholdtgt 3 -destdir model-data
+fairseq preprocess -sourcelang mk -targetlang en -trainpref train/train \
+                   -validpref dev/dev -testpref test/test -thresholdsrc 3 \
+                   -thresholdtgt 3 -destdir model-data
 ```
 
 ## Training
@@ -82,7 +84,9 @@ After the preprossing steps the three models can be trained.
 With the following command the bi-lstm model can be trained:
 
 ```bash
-fairseq train -sourcelang mk -targetlang en -datadir model-data -model blstm -nhid 512 -dropout 0.2 -dropout_hid 0 -optim adam -lr 0.0003125 -savedir model-blstm
+fairseq train -sourcelang mk -targetlang en -datadir model-data -model blstm \
+              -nhid 512 -dropout 0.2 -dropout_hid 0 -optim adam -lr 0.0003125 \
+              -savedir model-blstm
 ```
 
 ### CNN as encoder, LSTM as decoder
@@ -91,7 +95,8 @@ With the following command the CNN as encoder, LSTM as decoder model can be
 trained:
 
 ```bash
-fairseq train -sourcelang mk -targetlang en -datadir model-data -model conv -nenclayer 6 -dropout 0.2 -dropout_hid 0 -savedir model-conv
+fairseq train -sourcelang mk -targetlang en -datadir model-data -model conv \
+              -nenclayer 6 -dropout 0.2 -dropout_hid 0 -savedir model-conv
 ```
 
 ### Fully convolutional
@@ -99,7 +104,9 @@ fairseq train -sourcelang mk -targetlang en -datadir model-data -model conv -nen
 With the following command the fully convolutional model can be trained:
 
 ```bash
-fairseq train -sourcelang mk -targetlang en -datadir model-data -model fconv -nenclayer 4 -nlayer 3 -dropout 0.2 -optim nag -lr 0.25 -clip 0.1 -momentum 0.99 -timeavg -bptt 0 -savedir model-fconv
+fairseq train -sourcelang mk -targetlang en -datadir model-data -model fconv \
+              -nenclayer 4 -nlayer 3 -dropout 0.2 -optim nag -lr 0.25 \
+              -clip 0.1 -momentum 0.99 -timeavg -bptt 0 -savedir model-fconv
 ```
 
 ## Decoding
@@ -109,7 +116,9 @@ fairseq train -sourcelang mk -targetlang en -datadir model-data -model fconv -ne
 With the following command the bi-lstm model can decode the test set:
 
 ```bash
-fairseq generate -sourcelang mk -targetlang en -path model-blstm/model_best.th7 -datadir model-data -beam 10 -nbest 1 -dataset test > model-blstm/system.output
+fairseq generate -sourcelang mk -targetlang en \
+                 -path model-blstm/model_best.th7 -datadir model-data -beam 10 \
+                 -nbest 1 -dataset test > model-blstm/system.output
 ```
 
 ### CNN as encoder, LSTM as decoder
@@ -118,7 +127,9 @@ With the following command the CNN as encoder, LSTM as decoder model can
 decode the test set:
 
 ```bash
-fairseq generate -sourcelang mk -targetlang en -path model-conv/model_best.th7 -datadir model-data -beam 10 -nbest 1 -dataset test > model-conv/system.output
+fairseq generate -sourcelang mk -targetlang en -path model-conv/model_best.th7 \
+                 -datadir model-data -beam 10 -nbest 1 \
+                 -dataset test > model-conv/system.output
 ```
 
 ### Fully convolutional
@@ -126,7 +137,9 @@ fairseq generate -sourcelang mk -targetlang en -path model-conv/model_best.th7 -
 With the following command the fully convolutional model can decode the test set:
 
 ```bash
-fairseq generate -sourcelang mk -targetlang en -path model-fconv/model_best.th7 -datadir model-data -beam 10 -nbest 1 -dataset test > model-fconv/system.output
+fairseq generate -sourcelang mk -targetlang en -path model-fconv/model_best.th7 \
+                 -datadir model-data -beam 10 -nbest 1 \
+                 -dataset test > model-fconv/system.output
 ```
 
 ## Calculating the BLEU-score

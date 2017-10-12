@@ -28,7 +28,120 @@ We trained three systems with different architectures:
 * CNN as encoder, LSTM as decoder
 * Fully convolutional
 
-Furthermore we use different *BPE* merge operations: 16.000 and 32.000. Here are
+## Preprocessing
+
+All necessary scripts can be found in the `scripts` folder of this repository.
+
+In the first step, we need to download and extract the parallel *SETimes* corpus
+for Macedonian to English:
+
+```bash
+wget http://nlp.ffzg.hr/data/corpora/setimes/setimes.en-mk.txt.tgz
+tar -xf setimes.en-mk.txt.tgz
+```
+
+The `data_preparation.sh` scripts performs the following steps on the corpus:
+
+* download of the *MOSES* tokenizer script; tokenization of the whole corpus
+* download of the *BPE* scripts; learning and applying *BPE* on the corpus
+
+```bash
+./data_preparation setimes.en-mk.mk.txt setimes.en-mk.en.txt
+```
+
+After that the corpus is split into training, development and test set:
+
+```bash
+./split_dataset corpus.clean.bpe.32000.mk corpus.clean.bpe.32000.en
+```
+
+The following folder structure needs to be created:
+
+```bash
+mkdir {train,dev,test}
+
+mv dev.* dev
+mv train.* train
+mv test.* test
+
+mkdir model-data
+```
+
+After that the `fairseq` tool can be invoked to preprocess the corpus:
+
+```bash
+fairseq preprocess -sourcelang mk -targetlang en -trainpref train/train -validpref dev/dev -testpref test/test -thresholdsrc 3 -thresholdtgt 3 -destdir model-data
+```
+
+## Training
+
+After the preprossing steps the three models can be trained.
+
+### Standard Bi-LSTM
+
+With the following command the bi-lstm model can be trained:
+
+```bash
+fairseq train -sourcelang mk -targetlang en -datadir model-data -model blstm -nhid 512 -dropout 0.2 -dropout_hid 0 -optim adam -lr 0.0003125 -savedir model-blstm
+```
+
+### CNN as encoder, LSTM as decoder
+
+With the following command the CNN as encoder, LSTM as decoder model can be
+trained:
+
+```bash
+fairseq train -sourcelang mk -targetlang en -datadir model-data -model conv -nenclayer 6 -dropout 0.2 -dropout_hid 0 -savedir model-conv
+```
+
+### Fully convolutional
+
+With the following command the fully convolutional model can be trained:
+
+```bash
+fairseq train -sourcelang mk -targetlang en -datadir model-data -model fconv -nenclayer 4 -nlayer 3 -dropout 0.2 -optim nag -lr 0.25 -clip 0.1 -momentum 0.99 -timeavg -bptt 0 -savedir model-fconv
+```
+
+## Decoding
+
+### Standard Bi-LSTM
+
+With the following command the bi-lstm model can decode the test set:
+
+```bash
+fairseq generate -sourcelang mk -targetlang en -path model-blstm/model_best.th7 -datadir model-data -beam 10 -nbest 1 -dataset test > model-blstm/system.output
+```
+
+### CNN as encoder, LSTM as decoder
+
+With the following command the CNN as encoder, LSTM as decoder model can
+decode the test set:
+
+```bash
+fairseq generate -sourcelang mk -targetlang en -path model-conv/model_best.th7 -datadir model-data -beam 10 -nbest 1 -dataset test > model-conv/system.output
+```
+
+### Fully convolutional
+
+With the following command the fully convolutional model can decode the test set:
+
+```bash
+fairseq generate -sourcelang mk -targetlang en -path model-fconv/model_best.th7 -datadir model-data -beam 10 -nbest 1 -dataset test > model-fconv/system.output
+```
+
+## Calculating the BLEU-score
+
+With the helper script `fairseq_bleu.sh` the BLEU-score of all models can be
+calculated very easy. The script expects the system output file as command
+line argument:
+
+```bash
+./fairseq_bleu.sh model-blstm/system.output
+```
+
+## Results
+
+We use different *BPE* merge operations: 16.000 and 32.000. Here are
 the results on the final test set:
 
 | Model                        | *BPE* merge operations  | BLEU-Score

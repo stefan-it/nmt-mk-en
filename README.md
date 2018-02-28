@@ -245,8 +245,6 @@ a bug, see [this](https://github.com/tensorflow/tensor2tensor/issues/529) issue)
 We want to train a char-based NMT system with the [dl4mt-c2c](https://github.com/nyu-dl/dl4mt-c2c)
 library in near future.
 
-Another task is to train a "big" *Transformer* model.
-
 # Acknowledgments
 
 We would like to thank the *Leibniz-Rechenzentrum der Bayerischen Akademie der

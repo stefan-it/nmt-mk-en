@@ -175,10 +175,70 @@ The second NMT system for Macedonian to English is built with the [*tensor2tenso
 library. We trained two systems: one subword-based system and one
 character-based NMT system. Here are the results on the final test set:
 
+## Training (Transformer base)
+
+The following training steps are tested with *tensor2tensor* in version *1.5.1*.
+
+First, we create the initial directory structure:
+
+```bash
+mkdir -p t2t_data t2t_datagen t2t_train t2t_output
+```
+
+In the next step, the training and development datasets are downloaded and
+prepared:
+
+```bash
+t2t-datagen --data_dir=t2t_data --tmp_dir=t2t_datagen/ --problem=translate_enmk_setimes32k
+```
+
+Then the training step can be started:
+
+```bash
+t2t-trainer --data_dir=t2t_data --problems=translate_enmk_setimes32k_rev --model=transformer --hparams_set=transformer_base --output_dir=t2t_output
+```
+
+The number of GPUs used for training can be specified with the `--worker_gpu`
+option.
+
+## Decoding
+
+In the next step, the test dataset is downloaded and extracted:
+
+```bash
+wget "https://github.com/stefan-it/nmt-mk-en/raw/master/data/setimes.mk-en.test.tgz"
+tar -xzf setimes.mk-en.test.tgz
+```
+
+Then the decoding step for the test dataset can be started:
+
+```bash
+t2t-decoder --data_dir=t2t_data --problems=translate_enmk_setimes32k_rev \
+  --model=transformer --decode_hparams="beam_size=4,alpha=0.6" \
+  --decode_from_file=test.mk --decode_to_file=system.output \
+  --hparams_set=transformer_big --output_dir=t2t_output/
+```
+
+## Calculating the BLEU-score
+
+The BLEU-score can be calculated with the built-in `t2t-bleu` tool:
+
+```bash
+t2t-bleu --translation=system.output --reference=test.en
+```
+
+## Results
+
+The following results can be achieved using the Transformer model. A
+character-based model was also trained and measured. A big transformer model
+was also trained using *tensor2tensor* in version *1.2.9* (latest version has
+a bug, see [this](https://github.com/tensorflow/tensor2tensor/issues/529) issue.
+
 | Model                        | BLEU-Score
 | ---------------------------- | ----------
-| Transformer                  | **52,70**
-| Transformer (char-based)     | 34,26
+| Transformer                  | **54,00** (uncased)
+| Transformer (big)            | 43,74 (uncased)
+| Transformer (char-based)     | 37.43 (uncased)
 
 # Further work
 

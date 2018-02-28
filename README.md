@@ -232,7 +232,7 @@ t2t-bleu --translation=system.output --reference=test.en
 The following results can be achieved using the Transformer model. A
 character-based model was also trained and measured. A big transformer model
 was also trained using *tensor2tensor* in version *1.2.9* (latest version has
-a bug, see [this](https://github.com/tensorflow/tensor2tensor/issues/529) issue.
+a bug, see [this](https://github.com/tensorflow/tensor2tensor/issues/529) issue).
 
 | Model                        | BLEU-Score
 | ---------------------------- | ----------

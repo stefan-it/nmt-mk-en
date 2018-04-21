@@ -173,7 +173,22 @@ The best bleu-score was obtained with the fully convolutional model with
 
 The second NMT system for Macedonian to English is built with the [*tensor2tensor*](https://github.com/tensorflow/tensor2tensor)
 library. We trained two systems: one subword-based system and one
-character-based NMT system. Here are the results on the final test set:
+character-based NMT system.
+
+**Notice**: The problem description for this task is found in `translate_enmk.py`
+in the root repository. This problem was once directly included and available
+in *tensor2tensor*. But I decided to replace the integrated *tensor2tensor*
+problem for Macedonian to English with a more challenging one. To replicate
+all experiments in this repository, the `translate_enmk.py` problem is now a
+user-defined problem and must be included in the following way:
+
+```bash
+cp translate_enmk.py /tmp
+echo "from . import my_submodule" > __init__.py
+```
+
+To use this problem, the `--t2t_usr_dir` commandline option must point to the
+appropriate folder (in this example `/tmp`).
 
 ## Training (Transformer base)
 
@@ -189,13 +204,16 @@ In the next step, the training and development datasets are downloaded and
 prepared:
 
 ```bash
-t2t-datagen --data_dir=t2t_data --tmp_dir=t2t_datagen/ --problem=translate_enmk_setimes32k
+t2t-datagen --data_dir=t2t_data --tmp_dir=t2t_datagen/ \
+  --problem=translate_enmk_setimes32k --t2t_usr_dir /tmp
 ```
 
 Then the training step can be started:
 
 ```bash
-t2t-trainer --data_dir=t2t_data --problems=translate_enmk_setimes32k_rev --model=transformer --hparams_set=transformer_base --output_dir=t2t_output
+t2t-trainer --data_dir=t2t_data --problems=translate_enmk_setimes32k_rev \
+  --model=transformer --hparams_set=transformer_base --output_dir=t2t_output \
+  --t2t_usr_dir /tmp
 ```
 
 The number of GPUs used for training can be specified with the `--worker_gpu`
@@ -216,7 +234,8 @@ Then the decoding step for the test dataset can be started:
 t2t-decoder --data_dir=t2t_data --problems=translate_enmk_setimes32k_rev \
   --model=transformer --decode_hparams="beam_size=4,alpha=0.6" \
   --decode_from_file=test.mk --decode_to_file=system.output \
-  --hparams_set=transformer_big --output_dir=t2t_output/
+  --hparams_set=transformer_big --output_dir=t2t_output/ \
+  --t2t_usr_dir /tmp
 ```
 
 ## Calculating the BLEU-score

@@ -184,11 +184,13 @@ user-defined problem and must be included in the following way:
 
 ```bash
 cp translate_enmk.py /tmp
-echo "from . import my_submodule" > __init__.py
+echo "from . import my_submodule" > /tmp/__init__.py
 ```
 
 To use this problem, the `--t2t_usr_dir` commandline option must point to the
-appropriate folder (in this example `/tmp`).
+appropriate folder (in this example `/tmp`). For more information about
+user-defined problems, see offical
+[documentation](https://github.com/tensorflow/tensor2tensor#adding-your-own-components).
 
 ## Training (Transformer base)
 
